@@ -1,57 +1,61 @@
 // from data.js
 var tableData = data;
 
-// YOUR CODE HERE!
-var tbody = d3.select("tbody");
+// Initialize the button instance
+var button = d3.select("#filter-btn");
 
-// begin function to create the table.
-function createTable (data) {
+// Initialize the form instance
+var form = d3.select("#form");
+
+// Create Event handlers
+button.on("click", runEvent);
+form.on("submit", runEvent);
+
+// Function to create and append data to the table
+function createTable(filteredData){
+    
+    // Select the table element by id
+    var table = d3.select("#ufo-table");
+
+    // Select the tbody element by id 
+    var tbody = table.select("tbody");
+    var trow;
+
+    // Sets the table to it's default blank setting for population
     tbody.html("");
-    data.forEach(( row ) => {
-        var datarow = tbody.append("tr");
-        Object.values(row).forEach(( value ) => {
-            var cell = datarow.append("td");
-            cell.text(value)
-        })
-    })
-}
-// Call the createTable function to display data in the HTML body.
-createTable(tableData);
 
-/* Create a function to filter the javascript file
-when the search date button is pressed */
+    // Loop through each object and append the data to the table
+    filteredData.forEach(function(dataObject){
+        // Create new row for each object
+        trow = tbody.append("tr");
+        trow.append("td").text(dataObject.datetime);
+        trow.append("td").text(dataObject.city);
+        trow.append("td").text(dataObject.state);
+        trow.append("td").text(dataObject.country);
+        trow.append("td").text(dataObject.shape);
+        trow.append("td").text(dataObject.durationMinutes);
+        trow.append("td").text(dataObject.comments);
 
-function searchTable () {
-    //Create multi
-    var date = d3.select("#datetime").property("value");
-    var city = d3.select("#city").property("value").toLowerCase();
-    var state = d3.select("#state").property("value").toLowerCase();
-    var country = d3.select("#country").property("value").toLowerCase();
-    var shape = d3.select("#shape").property("value").toLowerCase();
-    if (date.length > 0)  {
-        var filterdata = tableData.filter(row => row.datetime === date);
-        console.log(filterdata);
-    }
-    if (city.length > 0)  {
-        var filterdata = tableData.filter(row => row.city === city);
-        console.log(filterdata);
-    } 
-    if (state.length > 0)  {
-        var filterdata = tableData.filter(row => row.state === state);
-        console.log(filterdata);
-    } 
-    if (country.length > 0)  {
-        var filterdata = tableData.filter(row => row.country === country);
-        console.log(filterdata);
-    } 
-    if (shape.length > 0)  {
-        var filterdata = tableData.filter(row => row.shape === shape);
-        console.log(filterdata);
-    } 
-    console.log(filterdata);
-    createTable(filterdata);
-}
-// Call the function to run the filter when the search button is "clicked" by the user
-d3.selectAll("#filter-btn").on("click", searchTable);
+    });
 
-createTable(tableData);
+};
+
+// Event Handler Function
+function runEvent(){
+
+    // Prevent Page from Refreshing
+    d3.event.preventDefault();
+
+    // Select the input element and get the raw HTML node
+    var inputElement = d3.select("#datetime");
+
+    // Get the input value (date) from the input element
+    var inputData = inputElement.property("value");
+
+    // Filter the data.js by the input value
+    var filteredData = tableData.filter(sighting => sighting.datetime === inputData);
+
+    // Call the createTable function with the 
+    // filteredData as the parameter
+    createTable(filteredData);
+};
